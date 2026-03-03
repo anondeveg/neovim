@@ -10555,6 +10555,17 @@ local options = {
       type = 'number',
     },
     {
+      abbreviation = 'pres',
+      defaults = false,
+      desc = [=[
+        presentation mode
+      ]=],
+      full_name = 'presentation',
+      scope = { 'win' },
+      short_desc = N_('presentation mode'),
+      type = 'boolean',
+    },
+    {
       full_name = 'winborder',
       scope = { 'global' },
       cb = 'did_set_winborder',

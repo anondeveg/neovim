@@ -210,6 +210,8 @@ typedef struct {
 #define w_p_fcs w_onebuf_opt.wo_fcs    // 'fillchars'
   OptInt wo_winbl;
 #define w_p_winbl w_onebuf_opt.wo_winbl  // 'winblend'
+  int wo_pmo;
+#define w_p_pmo w_onebuf_opt.wo_pmo  // 'presentation'
 
   // A few options have local flags for kOptFlagInsecure.
   uint32_t wo_wrap_flags;               // flags for 'wrap'

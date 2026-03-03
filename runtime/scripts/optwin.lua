@@ -92,6 +92,7 @@ local options_list = {
     { 'lhistory', N_ 'maximum number of location lists that can be stored in history' },
     { 'conceallevel', N_ 'controls whether concealable text is hidden' },
     { 'concealcursor', N_ 'modes in which text in the cursor line can be concealed' },
+    { 'presentation', N_ 'presentation mode'},
   },
   {
     header = N_ 'syntax, highlighting and spelling',
