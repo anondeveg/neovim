@@ -144,6 +144,8 @@ return {
     WinNew = false, -- after creating a new window
     WinResized = true, -- after a window was resized
     WinScrolled = true, -- after a window was scrolled or resized
+    PresentationEnter=true, -- after presentation mode has been enabed
+    PresentationLeave=true,-- after presentation mode has been enabed
   },
   --- @type table<string,string>
   --- Keys are event aliases.

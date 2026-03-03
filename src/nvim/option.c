@@ -1864,6 +1864,17 @@ static void apply_optionset_autocmd(OptIndex opt_idx, int opt_flags, OptVal oldv
   reset_v_option_vars();
 }
 
+static const char *did_set_presentation(optset_T *args)
+{
+  win_T *win = (win_T *)args->os_win;
+  if (win->w_p_pmo) {
+    apply_autocmds(EVENT_PRESENTATIONENTER, NULL, NULL, false, curbuf);
+  } else {
+    apply_autocmds(EVENT_PRESENTATIONLEAVE, NULL, NULL, false, curbuf);
+  }
+  return NULL;
+}
+
 /// Process the updated 'arabic' option value.
 static const char *did_set_arabic(optset_T *args)
 {

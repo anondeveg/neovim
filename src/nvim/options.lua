@@ -10557,6 +10557,7 @@ local options = {
     {
       abbreviation = 'pres',
       defaults = false,
+      cb="did_set_presentation",
       desc = [=[
         presentation mode
       ]=],
