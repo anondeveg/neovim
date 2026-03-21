@@ -49,7 +49,7 @@ local heading_queries = {
 --- Extract headings from buffer
 --- @param bufnr integer buffer to extract headings from
 --- @return TS.Heading[]
-local get_headings = function(bufnr)
+M.Get_headings = function(bufnr)
   local lang = ts.language.get_lang(vim.bo[bufnr].filetype)
   if not lang then
     return {}
@@ -88,7 +88,7 @@ end
 function M.show_toc(qf_height)
   local bufnr = api.nvim_get_current_buf()
   local bufname = api.nvim_buf_get_name(bufnr)
-  local headings = get_headings(bufnr)
+  local headings = M.Get_headings(bufnr)
   if #headings == 0 then
     return
   end
@@ -112,7 +112,7 @@ end
 --- todo(clason): support count
 function M.jump(opts)
   local bufnr = api.nvim_get_current_buf()
-  local headings = get_headings(bufnr)
+  local headings = M.Get_headings(bufnr)
   if #headings == 0 then
     return
   end
