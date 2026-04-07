@@ -57,6 +57,7 @@ local function compute_hash(fullpath, bufnr)
   if vim.fn.isdirectory(fullpath) == 1 then
     return true, 'directory'
   end
+
  if bufnr then
   contents = get_buf_content(bufnr)
  else
@@ -65,17 +66,22 @@ local function compute_hash(fullpath, bufnr)
       if not f then
         return nil, nil
       end
+      f:close()
     if vim.fn.bufloaded(fullpath) == 1 then
         bufnr = vim.fn.bufnr(fullpath, false)
         if bufnr ~= -1 then
          contents =  get_buf_content(bufnr) 
-         f:close()
         end
 
     end
+    end
+
     if not contents then
+      local f = io.open(fullpath, 'rb')
+      if(f) then
       contents = f:read('*a')
       f:close()
+    end
     end
     end
   if not contents then
@@ -85,7 +91,6 @@ local function compute_hash(fullpath, bufnr)
   hash = vim.fn.sha256(contents)
 
   return contents, hash
-end
 end
 
 --- Writes provided {trust} table to trust database at
