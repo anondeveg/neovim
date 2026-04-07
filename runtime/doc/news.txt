@@ -60,6 +60,9 @@ API
 
 • |vim.lsp.buf.declaration()|, |vim.lsp.buf.definition()|, |vim.lsp.buf.definition()|,
   and |vim.lsp.buf.implementation()| now follows 'switchbuf'.
+• |vim.secure.trust()| `action='allow'` now hashes buffer contents
+  instead of on-disk contents if the file is loaded, and warns when
+  trusting by path.
 
 BUILD
 

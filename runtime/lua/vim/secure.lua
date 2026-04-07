@@ -21,24 +21,19 @@ local function read_trust()
   return trust
 end
 
-
 --- Gets the contents of a loaded buffer.
 ---
 --- @param bufnr integer The buffer handle
 --- @return string|nil contents Buffer contents, or `nil` if the buffer cannot be read
 local function get_buf_content(bufnr)
-  local contents ---@type string
-  if bufnr then
-    local newline = vim.bo[bufnr].fileformat == 'unix' and '\n' or '\r\n'
-    contents =
-      table.concat(vim.api.nvim_buf_get_lines(bufnr --[[@as integer]], 0, -1, false), newline)
-    if vim.bo[bufnr].endofline then
-      contents = contents .. newline
-    end
-  else
-    return nil
-end
-return contents
+  local contents ---@type string|nil
+  local newline = vim.bo[bufnr].fileformat == 'unix' and '\n' or '\r\n'
+  contents =
+    table.concat(vim.api.nvim_buf_get_lines(bufnr --[[@as integer]], 0, -1, false), newline)
+  if vim.bo[bufnr].endofline then
+    contents = contents .. newline
+  end
+  return contents
 end
 
 --- If {fullpath} is a file, reads its contents and returns the contents along with a hash.
@@ -58,35 +53,29 @@ local function compute_hash(fullpath, bufnr)
     return true, 'directory'
   end
 
- if bufnr then
-  contents = get_buf_content(bufnr)
- else
-    do
-      local f = io.open(fullpath, 'rb')
-      if not f then
-        return nil, nil
-      end
-      f:close()
+  if bufnr then
+    contents = get_buf_content(bufnr)
+  else
     if vim.fn.bufloaded(fullpath) == 1 then
-        bufnr = vim.fn.bufnr(fullpath, false)
-        if bufnr ~= -1 then
-         contents =  get_buf_content(bufnr) 
-        end
-
-    end
+      bufnr = vim.fn.bufnr(fullpath, false)
+      if bufnr ~= -1 then
+        contents = get_buf_content(bufnr)
+      end
     end
 
     if not contents then
       local f = io.open(fullpath, 'rb')
-      if(f) then
-      contents = f:read('*a')
-      f:close()
+      if f then
+        contents = f:read('*a')
+        f:close()
+      else
+        return nil, nil
+      end
     end
-    end
-    end
+  end
   if not contents then
-      return nil, nil
-    end
+    return nil, nil
+  end
 
   hash = vim.fn.sha256(contents)
 
@@ -243,11 +232,16 @@ function M.trust(opts)
   local trust = read_trust()
 
   if action == 'allow' then
+    if path then
+      vim.notify(
+        'File contents may have changed since last viewed. Open the buffer and run :trust for stronger guarantees.',
+        vim.log.levels.WARN
+      )
+    end
     local contents, hash = compute_hash(fullpath, bufnr)
     if not contents then
       return false, string.format('could not read path: %s', fullpath)
     end
-
     trust[fullpath] = hash
   elseif action == 'deny' then
     trust[fullpath] = '!'
