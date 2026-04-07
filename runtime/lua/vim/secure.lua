@@ -21,9 +21,29 @@ local function read_trust()
   return trust
 end
 
---- If {fullpath} is a file, read the contents of {fullpath} (or the contents of {bufnr}
---- if given) and returns the contents and a hash of the contents.
+
+--- Gets the contents of a loaded buffer.
 ---
+--- @param bufnr integer The buffer handle
+--- @return string|nil contents Buffer contents, or `nil` if the buffer cannot be read
+local function get_buf_content(bufnr)
+  local contents ---@type string
+  if bufnr then
+    local newline = vim.bo[bufnr].fileformat == 'unix' and '\n' or '\r\n'
+    contents =
+      table.concat(vim.api.nvim_buf_get_lines(bufnr --[[@as integer]], 0, -1, false), newline)
+    if vim.bo[bufnr].endofline then
+      contents = contents .. newline
+    end
+  else
+    return nil
+end
+return contents
+end
+
+--- If {fullpath} is a file, reads its contents and returns the contents along with a hash.
+--- If {fullpath} is already loaded in a buffer, or if {bufnr} is given, reads directly
+--- from memory instead of the filesystem.
 --- If {fullpath} is a directory, then nothing is read from the filesystem, and
 --- `contents = true` and `hash = "directory"` is returned instead.
 ---
@@ -37,32 +57,35 @@ local function compute_hash(fullpath, bufnr)
   if vim.fn.isdirectory(fullpath) == 1 then
     return true, 'directory'
   end
-
-  if bufnr then
-    local newline = vim.bo[bufnr].fileformat == 'unix' and '\n' or '\r\n'
-    contents =
-      table.concat(vim.api.nvim_buf_get_lines(bufnr --[[@as integer]], 0, -1, false), newline)
-    if vim.bo[bufnr].endofline then
-      contents = contents .. newline
-    end
-  else
+ if bufnr then
+  contents = get_buf_content(bufnr)
+ else
     do
       local f = io.open(fullpath, 'rb')
       if not f then
         return nil, nil
       end
+    if vim.fn.bufloaded(fullpath) == 1 then
+        bufnr = vim.fn.bufnr(fullpath, false)
+        if bufnr ~= -1 then
+         contents =  get_buf_content(bufnr) 
+         f:close()
+        end
+
+    end
+    if not contents then
       contents = f:read('*a')
       f:close()
     end
-
-    if not contents then
+    end
+  if not contents then
       return nil, nil
     end
-  end
 
   hash = vim.fn.sha256(contents)
 
   return contents, hash
+end
 end
 
 --- Writes provided {trust} table to trust database at
