@@ -32,7 +32,6 @@ LSP
 
 LUA
 
-
 • vim.pos, vim.range always require the `buf` parameter.
 
 DIAGNOSTICS
@@ -112,6 +111,8 @@ API
   instead of on-disk contents if the file is loaded, and warns when
   trusting by path.
 • |nvim_set_hl()| supports "font" key.
+• |nvim_open_win()| `zindex` controls whether the UI will use a dimmed cursor
+  shape when an unfocused float is on top of the cursor.
 
 BUILD
 
@@ -140,10 +141,10 @@ HIGHLIGHTS
 LSP
 
 • LSP capabilities:
-  • `textDocument/foo` …
-    https://microsoft.github.io/language-server-protocol/specification/#textDocument_foo
-  • `textDocument/bar` …
-    https://microsoft.github.io/language-server-protocol/specification/#textDocument_bar
+  • Completion supports `CompletionItem.preselect` if 'completeopt' has
+    "preselect". https://microsoft.github.io/language-server-protocol/specification/#completionClientCapabilities
+  • `textDocument/foldingRange` |vim.lsp.foldtext()| highlights collapsed text.
+    https://microsoft.github.io/language-server-protocol/specification/#textDocument_foldingRange
 • |vim.lsp.buf.declaration()|, |vim.lsp.buf.definition()|, |vim.lsp.buf.definition()|,
   and |vim.lsp.buf.implementation()| now follows 'switchbuf'.
 • Support for nested snippets.

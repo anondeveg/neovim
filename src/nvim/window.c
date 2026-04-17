@@ -2848,7 +2848,7 @@ int win_close(win_T *win, bool free_buf, bool force)
       // close the last window until the there are no floating windows
       while (lastwin->w_floating) {
         // `force` flag isn't actually used when closing a floating window.
-        if (win_close(lastwin, free_buf, true) == FAIL) {
+        if (win_close(lastwin, !buf_hide(lastwin->w_buffer), true) == FAIL) {
           // If closing the window fails give up, to avoid looping forever.
           return FAIL;
         }
@@ -3214,7 +3214,7 @@ bool win_close_othertab(win_T *win, int free_buf, tabpage_T *tp, bool force)
       // close the last window until the there are no floating windows
       while (tp->tp_lastwin->w_floating) {
         // `force` flag isn't actually used when closing a floating window.
-        if (!win_close_othertab(tp->tp_lastwin, free_buf, tp, true)) {
+        if (!win_close_othertab(tp->tp_lastwin, !buf_hide(tp->tp_lastwin->w_buffer), tp, true)) {
           // If closing the window fails give up, to avoid looping forever.
           goto leave_open;
         }
@@ -3369,7 +3369,7 @@ static win_T *win_free_mem(win_T *win, int *dirp, tabpage_T *tp)
   return wp;
 }
 
-#if defined(EXITFREE)
+#ifdef EXITFREE
 void win_free_all(void)
 {
   // avoid an error for switching tabpage with the cmdline window open
